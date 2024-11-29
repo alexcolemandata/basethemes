@@ -1,11 +1,15 @@
+from __future__ import annotations
+from typing import Type
+from pathlib import Path
 from dataclasses import dataclass
 
+import yaml
 from basethemes.color import Color
 
 
 @dataclass(frozen=True)
 class BasePalette:
-    bases: dict[str, Color]
+    _bases: dict[str, Color]
     _palette_length: int  # bases should always have _palette_length number of keys
 
     def __init__(self, **kwargs: str | Color) -> None:
@@ -18,10 +22,14 @@ class BasePalette:
             base_key: Color(kwargs[f"base{base_key}"]) for base_key in self.base_keys
         }
 
-        object.__setattr__(self, "bases", bases)
+        object.__setattr__(self, "_bases", bases)
 
     def __len__(self) -> int:
         return self._palette_length
+
+    @property
+    def bases(self) -> dict[str, Color]:
+        return dict(self._bases)
 
     @property
     def base_keys(self) -> list[str]:
@@ -30,6 +38,9 @@ class BasePalette:
     def __repr__(self) -> str:
         base_kwargs = ",".join([f"base{k}='{v}'" for k, v in self.bases.items()])
         return f"{type(self).__name__}({base_kwargs})"
+
+    def __str__(self) -> str:
+        return ", ".join([f"{k}: {v}" for k, v in self.bases.items()])
 
     def __getitem__(self, key: int | str) -> Color:
         """Supports numeric indexing, or via hex code or base name"""
@@ -54,6 +65,59 @@ class Base16Palette(BasePalette):
 
 class Base24Palette(BasePalette):
     _palette_length = 24
+
+
+@dataclass(frozen=True)
+class BaseTheme:
+    file: Path
+    author: str
+    name: str
+    palette: BasePalette
+    system: str
+    variant: str
+    slug: str | None = None
+
+    def __str__(self) -> str:
+        return f"{self.name}"
+
+
+class BaseThemes:
+    base_dir: Path
+    themes: dict[str, BaseTheme]
+    palette_type: Type[BasePalette]
+
+    def __init__(self, base_dir: Path, palette_type: Type[BasePalette]) -> None:
+        if not base_dir.is_dir:
+            raise FileNotFoundError("`base_dir` is required to be a directory")
+
+        self.base_dir = base_dir
+        self.palette_type = palette_type
+        self._init_themes_from_base_dir()
+
+    def _init_themes_from_base_dir(self) -> None:
+        themes: dict[str, BaseTheme] = dict()
+        for theme_file in self.base_dir.glob("*.yaml"):
+            with open(theme_file, "r") as f:
+                raw_theme = yaml.safe_load(f)
+
+            theme_palette = self.palette_type(**raw_theme["palette"])
+            metadata = {
+                k: v
+                for k, v in raw_theme.items()
+                if k in ["author", "name", "system", "variant", "slug"]
+            }
+
+            theme = BaseTheme(file=theme_file, palette=theme_palette, **metadata)
+
+            if theme.name in themes:
+                raise ValueError(f"Duplicate theme name: {theme.name}")
+
+            themes[metadata["name"]] = theme
+
+        self.themes = themes
+
+    def __len__(self) -> int:
+        return len(self.themes)
 
 
 def int_to_base_key(n: int) -> str:
