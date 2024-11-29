@@ -83,7 +83,9 @@ class BaseTheme:
 
 class BaseThemes:
     themes: dict[str, BaseTheme]
-    palette_type: Type[BasePalette]
+    palette_type: Type[
+        BasePalette
+    ]  # TODO: remove palette_type, allow BaseThemes to have themes with different palette_types
 
     def __init__(
         self,
