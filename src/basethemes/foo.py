@@ -23,8 +23,22 @@ def init_repo(repo_url: str, clone_dir: Path) -> Repo:
 if __name__ == "__main__":
     repo = init_repo(repo_url=THEME_REPO_URL, clone_dir=REPO_DIR)
 
-    base16_themes_dir = Path(repo.git_dir).parent / "base16"
-    base16_themes = BaseThemes(base_dir=base16_themes_dir, palette_type=Base16Palette)
+    themes_dir = Path(repo.git_dir).parent
 
-    base24_themes_dir = Path(repo.git_dir).parent / "base24"
-    base_24_themes = BaseThemes(base_dir=base24_themes_dir, palette_type=Base24Palette)
+    base16_themes = BaseThemes(
+        base_dir=themes_dir / "base16", palette_type=Base16Palette
+    )
+    print(f"{len(base16_themes)=}")
+
+    base24_themes = BaseThemes(
+        base_dir=themes_dir / "base24", palette_type=Base24Palette
+    )
+    print(f"{len(base24_themes)=}")
+
+    base16_catppuccin = base16_themes.filter(
+        lambda theme: "catppuccin" in theme.name.lower()
+    )
+    print(f"{len(base16_catppuccin)=}")
+
+    base24_light = base24_themes.filtered(variant="light")
+    print(f"{len(base24_light)=}")
