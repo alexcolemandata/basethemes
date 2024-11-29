@@ -1,8 +1,7 @@
 """Hypothesis strategies for generating test cases"""
-from hypothesis.strategies import text, characters, SearchStrategy, lists
+from hypothesis.strategies import text, SearchStrategy, lists
 
 from string import hexdigits
-
 
 from basethemes import color as _color
 from basethemes import base as _base

@@ -1,9 +1,6 @@
 import pytest
 from hypothesis import given, strategies as st
 
-from string import hexdigits
-
-
 from basethemes.base import BasePalette, int_to_base_key
 from basethemes.color import Color
 

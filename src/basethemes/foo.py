@@ -1,14 +1,10 @@
 from __future__ import annotations
-from typing import NamedTuple
 from git import Repo
 from pathlib import Path
 from os import getenv
 import yaml
-from string import hexdigits
 
-from dataclasses import dataclass
-from .color import Color
-from .base import BasePalette, Base16Palette
+from .base import Base16Palette
 
 THEME_REPO_URL = "https://github.com/tinted-theming/schemes"
 
