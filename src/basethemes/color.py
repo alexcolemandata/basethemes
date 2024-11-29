@@ -10,7 +10,7 @@ class Color:
             self.hex = hex.hex
             return None
 
-        hex = hex.strip("#").upper()
+        hex = hex.lstrip("#").upper()
 
         if len(hex) != 6:
             raise ValueError(f"invalid length for {hex=}")
