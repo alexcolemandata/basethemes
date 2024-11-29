@@ -5,6 +5,7 @@ from dataclasses import dataclass
 
 import yaml
 from basethemes.color import Color
+from basethemes.terminal_colors import TerminalColors
 
 
 @dataclass(frozen=True)
@@ -58,9 +59,32 @@ class BasePalette:
 
         return self.bases[base_key]
 
+    def to_terminal_colors(self) -> TerminalColors:
+        raise NotImplementedError("Requires implementation by subclass")
+
 
 class Base16Palette(BasePalette):
     _palette_length = 16
+
+    def to_terminal_colors(self) -> TerminalColors:
+        return TerminalColors(
+            color0=self[0],
+            color1=self[8],
+            color2=self[11],
+            color3=self[10],
+            color4=self[13],
+            color5=self[14],
+            color6=self[12],
+            color7=self[5],
+            color8=self[3],
+            color9=self[9],
+            color10=self[1],
+            color11=self[2],
+            color12=self[4],
+            color13=self[6],
+            color14=self[15],
+            color15=self[7],
+        )
 
 
 class Base24Palette(BasePalette):
@@ -79,6 +103,9 @@ class BaseTheme:
 
     def __str__(self) -> str:
         return f"{self.name}"
+
+    def to_terminal_colors(self) -> TerminalColors:
+        return self.palette.to_terminal_colors()
 
 
 class BaseThemes:
