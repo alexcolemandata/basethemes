@@ -14,8 +14,10 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    "pytest",
     "ipdb",
     "pdbpp",
+    "hypothesis",
 ]
 
 [build-system]
