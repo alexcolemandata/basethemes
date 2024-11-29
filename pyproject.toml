@@ -8,6 +8,8 @@ description = "Tools for working with base 16/24 themes"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "GitPython",
+    "pyyaml"
 ]
 
 [project.optional-dependencies]
