@@ -9,7 +9,9 @@ class BasePalette:
     _palette_length: int  # bases should always have _palette_length number of keys
 
     def __init__(self, **kwargs: str | Color) -> None:
-        if missing_bases := [k for k in self.base_keys if f"base{k}" not in kwargs]:
+        if missing_bases := [
+            f"base{k}" for k in self.base_keys if f"base{k}" not in kwargs
+        ]:
             raise ValueError(f"Missing the following base_keys: {missing_bases}")
 
         bases = {

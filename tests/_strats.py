@@ -1,10 +1,11 @@
 """Hypothesis strategies for generating test cases"""
-from hypothesis.strategies import text, characters, SearchStrategy
+from hypothesis.strategies import text, characters, SearchStrategy, lists
 
 from string import hexdigits
 
 
-from basethemes.color import Color
+from basethemes import color as _color
+from basethemes import base as _base
 
 
 def hex_string(
@@ -23,5 +24,17 @@ def hex_string(
     return text(alphabet=hexdigits, min_size=min_size, max_size=max_size)
 
 
+def _palette_from_colors(colors: list[str]) -> _base.BasePalette:
+    class TestPalette(_base.BasePalette):
+        _palette_length = len(colors)
+
+    color_dict = {
+        f"base{_base.int_to_base_key(n)}": color for n, color in enumerate(colors)
+    }
+
+    return TestPalette(**color_dict)
+
+
 valid_color_string = hex_string(size=6)
-color = valid_color_string.map(Color)
+color = valid_color_string.map(_color.Color)
+palette = lists(valid_color_string, min_size=1, max_size=24).map(_palette_from_colors)
