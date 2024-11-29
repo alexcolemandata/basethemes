@@ -136,6 +136,9 @@ class BaseThemes:
     def __len__(self) -> int:
         return len(self.themes)
 
+    def __getitem__(self, key: str) -> BaseTheme:
+        return self.themes[key]
+
     @property
     def variants(self) -> set[str]:
         return {theme.variant for theme in self.themes.values()}
