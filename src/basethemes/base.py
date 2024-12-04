@@ -136,6 +136,9 @@ class BaseThemes:
 
         raise ValueError(f"Need to provide either `base_dir` or `themes`")
 
+    def list_theme_names(self) -> list[str]:
+        return list(self.themes.keys())
+
     def _init_themes_from_base_dir(self, base_dir: Path) -> None:
         if not base_dir.is_dir:
             raise FileNotFoundError("`base_dir` is required to be a directory")
