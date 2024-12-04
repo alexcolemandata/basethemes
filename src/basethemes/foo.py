@@ -5,7 +5,7 @@ from os import getenv
 import yaml
 
 from .base import Base16Palette, BaseTheme, BaseThemes, Base24Palette
-from .applier import kitty_theme, KittyApplier
+from .applier import KittyTheme, KittyApplier
 
 THEME_REPO_URL = "https://github.com/tinted-theming/schemes"
 
@@ -45,5 +45,8 @@ if __name__ == "__main__":
     print(f"{len(base24_light)=}")
 
     kitty = KittyApplier(config_file="/Users/alex/.config/kitty/kitty.conf")
-    kitty_theme_3024 = kitty_theme(colors=base16_themes["3024"].to_terminal_colors())
+    kitty_theme_3024 = KittyTheme(colors=base16_themes["3024"].to_terminal_colors())
+    kitty_settings = kitty_theme_3024.to_settings()
+    updated = kitty.updated_settings_from_theme(kitty_theme_3024)
+    kitty.apply_theme(kitty_theme_3024)
     # WIP: updated = kitty.updated_settings_from_theme(kitty_theme_3024)
