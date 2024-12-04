@@ -5,7 +5,13 @@ from os import getenv
 import yaml
 
 from .base import Base16Palette, BaseTheme, BaseThemes, Base24Palette
-from .applier import KittyTheme, KittyApplier, NeoVimApplier, SketchyBarApplier
+from .applier import (
+    KittyTheme,
+    KittyApplier,
+    NeoVimApplier,
+    SketchyBarApplier,
+    LazyBordersApplier,
+)
 
 THEME_REPO_URL = "https://github.com/tinted-theming/schemes"
 
@@ -13,7 +19,7 @@ THEME_REPO_URL = "https://github.com/tinted-theming/schemes"
 REPO_DIR = Path("/Users/alex/repos/tinted-theming")
 DOT_CONFIG = Path("/Users/alex/.config")
 
-DEFAULT_THEME = "Hopscotch"
+DEFAULT_THEME = "Gotham"
 
 
 def init_repo(repo_url: str, clone_dir: Path) -> Repo:
@@ -27,6 +33,10 @@ def apply_theme(base_themes: BaseThemes, theme_name: str) -> None:
     print(f"applying theme {theme_name}")
 
     theme = base_themes[theme_name]
+
+    # lazyborders
+    lazyborders = LazyBordersApplier(config_file=DOT_CONFIG / "borders/bordersrc")
+    lazyborders.apply_theme(theme)
 
     # sketchybar
     sketchybar = SketchyBarApplier(config_file=DOT_CONFIG / "sketchybar/colors.lua")

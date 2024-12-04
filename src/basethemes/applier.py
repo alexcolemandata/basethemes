@@ -396,3 +396,49 @@ class SketchyBarApplier(ThemeApplier):
         self.reload_config()
 
         return None
+
+
+class LazyBordersApplier(ThemeApplier):
+    app_name = "lazyborder"
+
+    def reload_config(self) -> None:
+        subprocess.run(f"{self.config_file.resolve()}", shell=True)
+        return None
+
+    def apply_theme(self, theme: BaseTheme) -> None:
+        config_lines = self.read_config()
+
+        lines = []
+
+        SETTINGS = ["active_color", "inactive_color"]
+        for line in config_lines:
+            stripped = line.strip()
+
+            for setting in SETTINGS:
+                if not stripped.startswith(setting):
+                    continue
+
+                if setting == "active_color":
+                    theme_color = theme.palette["base0C"]
+                else:
+                    theme_color = theme.palette["base01"]
+
+                new_color = str(theme_color).lower().removeprefix("#")
+
+                pre, hex, value = line.partition("0x")
+                opacity = value[:2]
+                newline = f"{pre}{hex}{opacity}{new_color}\n"
+
+                lines.append(newline)
+                break
+
+            else:
+                lines.append(line)
+
+        with open(self.config_file, "w") as f:
+            f.writelines(lines)
+
+        print(f"wrote updated to {self.config_file}")
+        self.reload_config()
+
+        return None
