@@ -21,6 +21,21 @@ def init_repo(repo_url: str, clone_dir: Path) -> Repo:
     return Repo.clone_from(repo_url, to_path=clone_dir, depth=1)
 
 
+def apply_theme(base_themes: BaseThemes, theme_name: str) -> None:
+    print(f"applying theme {theme_name}")
+
+    theme = base_themes[theme_name]
+
+    # kitty
+    print("updating kitty")
+    kitty = KittyApplier(config_file="/Users/alex/.config/kitty/kitty.conf")
+    kitty_theme = KittyTheme(colors=theme.to_terminal_colors())
+    kitty.apply_theme(kitty_theme)
+    kitty.reload_config()
+
+    return None
+
+
 if __name__ == "__main__":
     repo = init_repo(repo_url=THEME_REPO_URL, clone_dir=REPO_DIR)
 
@@ -44,9 +59,4 @@ if __name__ == "__main__":
     base24_light = base24_themes.filtered(variant="light")
     print(f"{len(base24_light)=}")
 
-    kitty = KittyApplier(config_file="/Users/alex/.config/kitty/kitty.conf")
-    kitty_theme_3024 = KittyTheme(colors=base16_themes["3024"].to_terminal_colors())
-    kitty_settings = kitty_theme_3024.to_settings()
-    updated = kitty.updated_settings_from_theme(kitty_theme_3024)
-    kitty.apply_theme(kitty_theme_3024)
-    # WIP: updated = kitty.updated_settings_from_theme(kitty_theme_3024)
+    apply_theme(base_themes=base16_themes, theme_name="Atelier Heath")
