@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Type, Callable
 from pathlib import Path
 from dataclasses import dataclass
+import re
 
 import yaml
 from basethemes.color import Color
@@ -106,6 +107,18 @@ class BaseTheme:
 
     def to_terminal_colors(self) -> TerminalColors:
         return self.palette.to_terminal_colors()
+
+    @property
+    def lower_name(self) -> str:
+        """Formats name as lower-case-with-hypens"""
+        # Remove non-alphanumeric characters except spaces
+        clean_string = re.sub(r"[^\w\s]", "", self.name)
+
+        # Replace spaces with hyphens
+        hyphenated_string = re.sub(r"\s+", "-", clean_string)
+        result = hyphenated_string.lower()
+
+        return result
 
 
 class BaseThemes:
