@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Literal
+from typing import Literal, ItemsView
 from dataclasses import dataclass
 
 from basethemes.color import Color
@@ -49,3 +49,9 @@ class TerminalColors:
             key = f"color{key}"
 
         return self.__getattribute__(key)
+
+    def items(self) -> ItemsView:
+        return self.__dict__.items()
+
+    def to_dict(self) -> dict[str, Color]:
+        return self.__dict__
