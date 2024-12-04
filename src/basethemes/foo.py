@@ -5,14 +5,15 @@ from os import getenv
 import yaml
 
 from .base import Base16Palette, BaseTheme, BaseThemes, Base24Palette
-from .applier import KittyTheme, KittyApplier, NeoVimApplier
+from .applier import KittyTheme, KittyApplier, NeoVimApplier, SketchyBarApplier
 
 THEME_REPO_URL = "https://github.com/tinted-theming/schemes"
 
 # TODO: via env/config
 REPO_DIR = Path("/Users/alex/repos/tinted-theming")
+DOT_CONFIG = Path("/Users/alex/.config")
 
-DEFAULT_THEME = "Black Metal (Mayhem)"
+DEFAULT_THEME = "Hopscotch"
 
 
 def init_repo(repo_url: str, clone_dir: Path) -> Repo:
@@ -27,16 +28,17 @@ def apply_theme(base_themes: BaseThemes, theme_name: str) -> None:
 
     theme = base_themes[theme_name]
 
+    # sketchybar
+    sketchybar = SketchyBarApplier(config_file=DOT_CONFIG / "sketchybar/colors.lua")
+    sketchybar.apply_theme(theme)
+
     # neovim
-    nvim = NeoVimApplier(config_file="/Users/alex/.config/nvim/lua/plugins/base16.lua")
+    nvim = NeoVimApplier(config_file=DOT_CONFIG / "nvim/lua/plugins/base16.lua")
     nvim.apply_theme(theme)
 
     # kitty
-    print("updating kitty")
-    kitty = KittyApplier(config_file="/Users/alex/.config/kitty/kitty.conf")
-    kitty_theme = KittyTheme(colors=theme.to_terminal_colors())
-    kitty.apply_theme(kitty_theme)
-    kitty.reload_config()
+    kitty = KittyApplier(config_file=DOT_CONFIG / "kitty/kitty.conf")
+    kitty.apply_theme(theme)
 
     return None
 
@@ -63,5 +65,7 @@ if __name__ == "__main__":
 
     base24_light = base24_themes.filtered(variant="light")
     print(f"{len(base24_light)=}")
+
+    print("base16_themes: " + "\n\t".join(sorted(base16_themes.list_theme_names())))
 
     apply_theme(base_themes=base16_themes, theme_name=DEFAULT_THEME)
