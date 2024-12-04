@@ -4,6 +4,8 @@ from __future__ import annotations
 from pathlib import Path
 
 from dataclasses import dataclass, field
+import os
+import signal
 from functools import partial
 
 from basethemes.terminal_colors import TerminalColor, TerminalColors, Color
@@ -15,6 +17,9 @@ DOT_CONFIG = Path("/Users/alex/.config")
 class ThemeApplier:
     app_name: str
     config_file: Path
+
+    def reload_config(self) -> None:
+        raise NotImplementedError("Requires implementation by subclass")
 
 
 @dataclass
@@ -190,3 +195,17 @@ class KittyApplier(ThemeApplier):
         print(f"wrote updated to {self.config_file}")
 
         return None
+
+    def reload_config(self) -> None:
+        kitty_pid = os.getenv("KITTY_PID")
+
+        if not kitty_pid:
+            raise EnvironmentError(f"Could not determine env var $KITTY_PID")
+
+        try:
+            kitty_pid = int(kitty_pid)
+        except ValueError:
+            raise EnvironmentError(f"$KITTY_PID was not an integer: {kitty_pid}")
+
+        # reload https://sw.kovidgoyal.net/kitty/conf/
+        os.kill(kitty_pid, signal.SIGUSR1)
