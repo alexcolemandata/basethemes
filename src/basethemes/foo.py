@@ -5,13 +5,14 @@ from os import getenv
 import yaml
 
 from .base import Base16Palette, BaseTheme, BaseThemes, Base24Palette
-from .applier import KittyTheme, KittyApplier
+from .applier import KittyTheme, KittyApplier, NeoVimApplier
 
 THEME_REPO_URL = "https://github.com/tinted-theming/schemes"
 
 # TODO: via env/config
 REPO_DIR = Path("/Users/alex/repos/tinted-theming")
-BASE_16_THEME = getenv("THEME_BASE16")
+
+DEFAULT_THEME = "Black Metal (Mayhem)"
 
 
 def init_repo(repo_url: str, clone_dir: Path) -> Repo:
@@ -25,6 +26,10 @@ def apply_theme(base_themes: BaseThemes, theme_name: str) -> None:
     print(f"applying theme {theme_name}")
 
     theme = base_themes[theme_name]
+
+    # neovim
+    nvim = NeoVimApplier(config_file="/Users/alex/.config/nvim/lua/plugins/base16.lua")
+    nvim.apply_theme(theme)
 
     # kitty
     print("updating kitty")
@@ -59,4 +64,4 @@ if __name__ == "__main__":
     base24_light = base24_themes.filtered(variant="light")
     print(f"{len(base24_light)=}")
 
-    apply_theme(base_themes=base16_themes, theme_name="Atelier Heath")
+    apply_theme(base_themes=base16_themes, theme_name=DEFAULT_THEME)

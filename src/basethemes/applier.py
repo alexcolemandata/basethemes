@@ -9,6 +9,7 @@ import signal
 from functools import partial
 
 from basethemes.terminal_colors import TerminalColor, TerminalColors, Color
+from basethemes.base import BaseTheme
 
 
 DOT_CONFIG = Path("/Users/alex/.config")
@@ -20,6 +21,12 @@ class ThemeApplier:
 
     def reload_config(self) -> None:
         raise NotImplementedError("Requires implementation by subclass")
+
+    def read_config(self) -> list[str]:
+        with open(self.config_file, "r") as f:
+            lines = f.readlines()
+
+        return lines
 
 
 @dataclass
@@ -120,12 +127,6 @@ class KittyApplier(ThemeApplier):
 
         return None
 
-    def read_config(self) -> list[str]:
-        with open(self.config_file, "r") as f:
-            lines = f.readlines()
-
-        return lines
-
     def parse_config(self) -> dict[int, KittySetting]:
         """Read the config, skipping over any lines marked with '#:'"""
 
@@ -209,3 +210,41 @@ class KittyApplier(ThemeApplier):
 
         # reload https://sw.kovidgoyal.net/kitty/conf/
         os.kill(kitty_pid, signal.SIGUSR1)
+
+
+class NeoVimApplier(ThemeApplier):
+    app_name = "neovim"
+
+    def __init__(self, config_file: Path | str) -> None:
+        config_file = Path(config_file)
+
+        if not config_file.is_file:
+            raise FileNotFoundError(f"could not locate config file {config_file}")
+
+        self.config_file = config_file
+
+        return None
+
+    def apply_theme(self, theme: BaseTheme) -> None:
+        lines = []
+        has_updated = False
+        for line in self.read_config():
+            if line.startswith("local base16_theme ="):
+                var, equals, _ = line.partition(" = ")
+                lines.append(f'{var}{equals}"{theme.lower_name}"\n')
+                has_updated = True
+
+            else:
+                lines.append(line)
+
+        if not has_updated:
+            raise ValueError(
+                f"Could not find base16_theme variable defined in {self.config_file}"
+            )
+
+        with open(self.config_file, "w") as f:
+            f.writelines(lines)
+
+        print(f"wrote updated to {self.config_file}")
+
+        return None
