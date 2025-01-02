@@ -1,4 +1,5 @@
 """Tools for applying a theme to various applications"""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -419,7 +420,7 @@ class LazyBordersApplier(ThemeApplier):
                     continue
 
                 if setting == "active_color":
-                    theme_color = theme.palette["base0C"]
+                    theme_color = theme.palette["base0B"]
                 else:
                     theme_color = theme.palette["base01"]
 
